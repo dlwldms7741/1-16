@@ -63,3 +63,5 @@ except FileNotFoundError:
     st.error(f"'{file_path}' 파일을 찾을 수 없습니다.")
 except Exception as e:
     st.error(f"데이터를 로드하는 중에 오류가 발생했습니다: {e}")
+
+
