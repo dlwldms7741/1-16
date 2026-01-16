@@ -31,20 +31,26 @@ def load_data(path):
 
 try:
     df = load_data(file_path)
-    st.success("데이터 로드 성공! 🚀")
+    
+    # [수정포인트] 데이터를 연도 기준 최신순(내림차순)으로 정렬
+    # '연도' 컬럼을 기준으로 큰 숫자가 위로 오게 합니다.
+    df_sorted = df.sort_values(by='연도', ascending=False)
+    
+    st.success("데이터 로드 및 최신순 정렬 성공! 🚀")
 
     # 3. 분석 화면 구성
     col1, col2 = st.columns([1, 1])
     
     with col1:
-        st.subheader("📝 데이터 미리보기")
-        st.dataframe(df.head(10))
+        st.subheader("📝 데이터 미리보기 (최신순)")
+        # 정렬된 데이터프레임의 상위 10개를 보여줍니다.
+        st.dataframe(df_sorted.head(10))
 
     with col2:
         st.subheader("📉 분석 설정")
         # 숫자 데이터만 선택
         numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
-        # '연도'는 X축으로 쓸 거니까 선택 목록에서 제외 (센스!)
+        # '연도'는 X축으로 쓸 거니까 선택 목록에서 제외
         if '연도' in numeric_cols:
             numeric_cols.remove('연도')
             
@@ -55,6 +61,7 @@ try:
     st.subheader(f"📅 연도별 {selected_col} 추세 확인")
     
     fig, ax = plt.subplots(figsize=(12, 5))
+    # 그래프는 시간 흐름대로 보는 것이 좋으므로 원본 df(오름차순) 혹은 정렬 전 데이터를 사용합니다.
     sns.lineplot(data=df, x='연도', y=selected_col, ax=ax, marker='o', color='#0077b6', linewidth=2)
     
     ax.set_title(f"연도별 {selected_col} 변화", fontsize=16, pad=20)
@@ -67,5 +74,4 @@ except FileNotFoundError:
     st.info("팁: 파이썬 파일(.py)과 CSV 파일이 '같은 폴더'에 있는지 확인해 보세요!")
 except Exception as e:
     st.error(f"❌ 예상치 못한 오류 발생: {e}")
-
     
